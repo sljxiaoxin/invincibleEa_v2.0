@@ -8,7 +8,7 @@
 #property version   "2.0"
 #property strict
 
-#include "CMaCross.mqh";
+#include "inc\CMaCross.mqh";
 
 //--------------------MaCross-----------------------
 
@@ -34,9 +34,9 @@ int OnInit()
       oCMaCross = new CMaCross(MaCross_MagicNumber);
    }
    if(isUseMaCross){
-      oCMaCross.init(MaCross_Lots, MaCross_intTP, MaCross_intSL);
+      oCMaCross.Init(MaCross_Lots, MaCross_intTP, MaCross_intSL);
    }else{
-      oCMaCross.stop();
+      oCMaCross.Stop();
    }
    
 //---

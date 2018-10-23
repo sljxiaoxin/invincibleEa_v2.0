@@ -6,7 +6,7 @@
 #property copyright "Copyright 2018."
 #property link      "http://www.yjx.com"
 
-#include "structs.mqh";
+//#include "structs.mqh";
 #include "CMaOne.mqh";
 #include "CTrade.mqh";
 class CMaCross
@@ -98,7 +98,7 @@ void CMaCross::Tick()
     }else{
          CheckTimeM5 = iTime(NULL,PERIOD_M5,0);
          this.FillData();
-         
+         this.Protect();
          this.Exit();
          this.Entry();
     }
@@ -106,28 +106,33 @@ void CMaCross::Tick()
 
 bool CMaCross::Entry()
 {
+   if(!m_isUse){
+      return false;
+   }
    if(m_ticket_fast != 0 || m_ticket_slow != 0){
       return false;
    }
+   
    int sig = this.EntrySignal();
+   Print("Entry sig is:",sig);
    int t = 0;
    if(sig == OP_BUY){
-      t = oCTrade.Buy(m_lots, 0, 0, "CMaM5_fast");
+      t = oCTrade.Buy(m_lots, m_sl, 30,"CMaM5_fast");
       if(t > 0){
          m_ticket_fast = t;
       }
-      t = oCTrade.Buy(m_lots, 0, 0, "CMaM5_slow");
+      t = oCTrade.Buy(m_lots, m_sl, m_tp, "CMaM5_slow");
       if(t > 0){
          m_ticket_slow = t;
       }
       
    }
    if(sig == OP_SELL){
-      t = oCTrade.Sell(m_lots, 0, 0, "CMaM5_fast");
+      t = oCTrade.Sell(m_lots, m_sl, 30, "CMaM5_fast");
       if(t > 0){
          m_ticket_fast = t;
       }
-      t = oCTrade.Sell(m_lots, 0, 0, "CMaM5_slow");
+      t = oCTrade.Sell(m_lots, m_sl, m_tp, "CMaM5_slow");
       if(t > 0){
          m_ticket_slow = t;
       }
@@ -142,6 +147,36 @@ bool CMaCross::Exit()
    }
    string sig = this.ExitSignal();
    //TODO
+   if(m_ticket_fast != 0){
+      if(oCTrade.GetOrderType(m_ticket_fast) == OP_BUY){
+         if(sig == "exit_buy_fast" || sig == "exit_buy_all"){
+            oCTrade.Close(m_ticket_fast);
+            m_ticket_fast = 0;
+         }
+      }
+      if(oCTrade.GetOrderType(m_ticket_fast) == OP_SELL){
+         if(sig == "exit_sell_fast" || sig == "exit_sell_all"){
+            oCTrade.Close(m_ticket_fast);
+            m_ticket_fast = 0;
+         }
+      }
+   }
+   
+   if(m_ticket_slow != 0){
+      if(oCTrade.GetOrderType(m_ticket_slow) == OP_BUY){
+            if(sig == "exit_buy_all"){
+               oCTrade.Close(m_ticket_slow);
+               m_ticket_slow = 0;
+            }
+      }
+      if(oCTrade.GetOrderType(m_ticket_slow) == OP_SELL){
+            if(sig == "exit_sell_all"){
+               oCTrade.Close(m_ticket_slow);
+               m_ticket_slow = 0;
+            }
+      }
+   }
+   return true;
    
 }
 
@@ -232,4 +267,9 @@ string CMaCross::ExitSignal()
       return "exit_sell_fast";
    }
    return "none";
+}
+
+void CMaCross::Protect()
+{
+   
 }
