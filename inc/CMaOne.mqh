@@ -52,7 +52,7 @@ void CMaOne::SetCross(string ct, double cp)
    crossType = ct;
    crossPrice = cp;
    crossPass = 0;
-   crossPrice = -1;
+   //crossPrice = -1;
    isStochCrossOk = false;
 }
 

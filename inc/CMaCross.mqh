@@ -79,6 +79,8 @@ void CMaCross::FillData()
    if(m_ticket_fast == 0 && m_ticket_slow == 0){
       OrderOpenPass  = 0;
    }
+   Print("m_ticket_fast=",m_ticket_fast);
+   Print("m_ticket_slow=",m_ticket_slow);
 }
 
 void CMaCross::Init(double _lots, int _tp, int _sl)
@@ -109,6 +111,8 @@ void CMaCross::Tick()
 
 bool CMaCross::Entry()
 {
+   int sig = this.EntrySignal();
+   Print("Entry sig is:",sig);
    if(!m_isUse){
       return false;
    }
@@ -118,8 +122,7 @@ bool CMaCross::Entry()
    if(isCurrCrossOpen){
       return false;
    }
-   int sig = this.EntrySignal();
-   Print("Entry sig is:",sig);
+   
    int t = 0;
    if(sig == OP_BUY){
       t = oCTrade.Buy(m_lots, m_sl, 30,"CMaM5_fast");
@@ -208,6 +211,9 @@ int CMaCross::EntrySignal()
             lPrice = m_Stoch100[i];
          }
       }
+      Print("hPrice is:",hPrice);
+      Print("lPrice is:",lPrice);
+      Print("crossType is:",oCMaOne.crossType);
       if(oCMaOne.crossType == "up"){
          if(hPrice > 49 && lPrice<26){
             oCMaOne.isStochCrossOk = true;
@@ -222,6 +228,9 @@ int CMaCross::EntrySignal()
    
    bool isOk;
    if(oCMaOne.IsCanOpenBuy() && m_Stoch100[1]>50){
+      Print("IsCanOpenBuy pip:",oCTrade.GetPip());
+      Print("IsCanOpenBuy crossPass:",oCMaOne.crossPass);
+      Print("IsCanOpenBuy crossPrice:",oCMaOne.crossPrice);
       isOk = false;
       if(oCMaOne.crossPass <8 && Ask - oCMaOne.crossPrice<5*oCTrade.GetPip()){
          isOk = true;
@@ -237,8 +246,11 @@ int CMaCross::EntrySignal()
          return OP_BUY;
       }
    }
-   
+   Print("m_Stoch100[1] is:",m_Stoch100[1]);
    if(oCMaOne.IsCanOpenSell() && m_Stoch100[1]<50){
+      Print("IsCanOpenSell pip:",oCTrade.GetPip());
+      Print("IsCanOpenSell crossPass:",oCMaOne.crossPass);
+      Print("IsCanOpenSell crossPrice:",oCMaOne.crossPrice);
       isOk = false;
       if(oCMaOne.crossPass <8 && oCMaOne.crossPrice -Bid<7*oCTrade.GetPip()){
          isOk = true;
