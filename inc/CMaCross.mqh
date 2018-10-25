@@ -271,11 +271,11 @@ int CMaCross::EntrySignal()
 
 string CMaCross::ExitSignal()
 {
-   if( (this.StochDistance(6)>18 && m_Stoch100[1] < m_Stoch100[2] && m_Stoch100[2]<50) || (m_Stoch100[1]>93 && Ask - m_Ma30[1]>24*oCTrade.GetPip())){
+   if( (this.StochDistance(6)>18 && m_Stoch100[1] < m_Stoch100[2] && m_Stoch100[2]<50 && m_Ma10[1]<m_Ma30[1] && Close[1]<Open[1] && Close[1] <m_Ma30[1]) || (m_Stoch100[1]>93 && Ask - m_Ma30[1]>24*oCTrade.GetPip())){
       return "exit_buy_all";
    }
    
-   if((this.StochDistance(6)>18 && m_Stoch100[1] > m_Stoch100[2] && m_Stoch100[2]>50) || (m_Stoch100[1]<7 && m_Ma30[1] -Bid>24*oCTrade.GetPip())){
+   if((this.StochDistance(6)>18 && m_Stoch100[1] > m_Stoch100[2] && m_Stoch100[2]>50 && m_Ma10[1]>m_Ma30[1]  && Close[1]>Open[1] && Close[1] >m_Ma30[1]) || (m_Stoch100[1]<7 && m_Ma30[1] -Bid>24*oCTrade.GetPip())){
       return "exit_sell_all";
    }
    
